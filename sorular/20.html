@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>20. Soru</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f7fb;
+  margin: 0;
+  padding: 30px 10px;
+}
+.page-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+  padding: 32px 36px 36px;
+}
+h1 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 26px;
+}
+.soru-wrap {
+  font-size: 18px;
+  line-height: 1.6;
+}
+.soru-baslik {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.soru-container {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+  gap: 32px;
+  align-items: flex-start;
+}
+.metin-kutu {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 24px 26px;
+}
+.soru-kutu {
+  background: #e5f0ff;
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.soru-metin {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.answers label {
+  display: block;
+  margin-bottom: 10px;
+}
+.nav {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+.nav button {
+  background: #0369a1;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.nav button:hover {
+  background: #075985;
+}
+@media (max-width: 800px) {
+  .soru-container { grid-template-columns: 1fr; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+<div class="soru-wrap"
+     data-quiz-key="tfl-20soru"
+     data-question-id="soru-20"
+     data-prev-url="19.html"
+     data-next-url="score.html">
+  <h2 class="soru-baslik">20. Soru</h2>
+
+  <div class="soru-container">
+
+    <!-- SOL: METİN -->
+    <div class="metin-kutu">
+      <b><p> HİKİKOMORİ </p></b>
+
+      <p>Japonya’da, 500 binden fazla genci etkisi altına alan "hikikomori" ile kayıp bir kuşak yetişiyor. Depresyonla karıştırılsa da bir hastalık sayılmayan ve Japon psikiyatristlerin üzerinde çalıştığı “hikikomori”nin kelime anlamı "elini ayağını çekmek." Bu gençler, aile baskısı ve akran zorbalığı yüzünden hayattan el ayak çekip odalarına kapanarak zamanlarının çoğunu bilgisayar başında geçiriyorlar. “Hikikomori”, modern bireyci toplumların tipik sosyal gerçekleşme baskısına tepki olarak harekete geçirilen bir başa çıkma stratejisidir. "İyi notlar almalısın", "Bir iş bulmalısın", "Komik olmalısın”, “Atletik olmalısın” gibi sosyal baskılar, ergenlik döneminde gençlerin sıklıkla karşılaştıkları beklenti cümleleridir. Gençler, bu tür baskılarla karşılaşmamak için iç dünyalarına çekilip kendilerini orada daha güvende hissediyorlar.
+    </div>
+
+    <!-- SAĞ: SORU + ŞIKLAR -->
+    <div class="soru-kutu">
+      <div class="soru-metin">
+        <strong>Soru:</strong> Aşağıdakilerden hangisi “Hikikomori”nin sonuçlarından biri değildir?
+      </div>
+
+      <p class="question-text" style="display:none;">
+        Hikikomori metni - sonuç sorusu
+      </p>
+
+      <div class="answers">
+        <label><input type="radio" name="answer" value="A"> A) Gençlerin yalnızlaşması</label><br>
+        <label><input type="radio" name="answer" value="B"> B) Kayıp bir neslin yetişmesi</label><br>
+        <label><input type="radio" name="answer" value="C"> C) Gençlerden beklentinin fazla olması</label><br>
+        <label><input type="radio" name="answer" value="D"> D) Gençlerin not alma becerilerini geliştirmesi</label><br>
+        <label><input type="radio" name="answer" value="E"> E) Sosyal gerçekleşme baskısına bir tepki olması</label><br>
+      </div>
+
+<div class="nav">
+  <button type="button" class="prev-btn">⬅ Önceki</button>
+  <button type="button" class="save-next-btn">Kaydet &amp; Bitir</button>
+</div>
+
+    </div>
+
+  </div>
+</div>
+
+  </div>
+
+<script>
+(function(){
+  const box = document.querySelector('.soru-wrap'); if(!box) return;
+  const quizKey = box.dataset.quizKey;
+  const qId = box.dataset.questionId;
+  const prevURL = box.dataset.prevUrl;
+  const nextURL = box.dataset.nextUrl;
+
+  // Her katılımcı sıfırdan başlasın → inputlar temizlensin
+  document.querySelectorAll('input[name="answer"]').forEach(el => el.checked = false);
+
+  const ansKey = quizKey + ':answers';
+  const metaKey = quizKey + ':meta';
+
+  function read(k,d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch(e){ return d; } }
+  function write(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+  let answers = read(ansKey, {});
+  let meta = read(metaKey, { quizKey, createdAt: new Date().toISOString() });
+
+  let firstInteractionMs = null;
+  const startTs = Date.now();
+
+  document.querySelectorAll('input[name="answer"]').forEach(el=>{
+    el.addEventListener('change', ()=>{
+      if(firstInteractionMs === null) firstInteractionMs = Date.now() - startTs;
+      save();
+    });
+  });
+
+  function save(){
+    const chosen = document.querySelector('input[name="answer"]:checked');
+    const value = chosen ? chosen.value : null;
+
+    answers[qId] = {
+      question_id: qId,
+      value,
+      saved_at: new Date().toISOString(),
+      time_on_page_ms: Date.now() - startTs
+    };
+
+    meta.lastSavedAt = new Date().toISOString();
+    write(ansKey, answers);
+    write(metaKey, meta);
+  }
+
+  document.querySelector('.prev-btn').onclick = ()=>{ save(); if(prevURL) location.href = prevURL; };
+  document.querySelector('.save-next-btn').onclick = ()=>{ save(); if(nextURL) location.href = nextURL; };
+
+})();
+</script>
+
+</body>
+</html>
