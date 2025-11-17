@@ -1,0 +1,36 @@
+<form id="pid-form" style="margin-bottom:20px;">
+  <label>
+    Katılımcı kodu / numarası:
+    <input id="pid-input" type="text" required style="padding:6px 10px; border-radius:6px; border:1px solid #ccc;">
+  </label>
+  <button type="submit" style="margin-left:10px; padding:6px 14px; border-radius:6px; border:none; background:#0369a1; color:#fff;">
+    Kaydet
+  </button>
+</form>
+<p style="font-size:13px; color:#555; margin-top:4px;">
+  * Kod (Örn: P01, P02…) kaydedildikten sonra sorulara geçebilirsiniz.
+</p>
+<script>
+(function(){
+  const quizKey = 'tfl-20soru';
+  const pidKey  = quizKey + ':participantId';
+
+  const form = document.getElementById('pid-form');
+  const input = document.getElementById('pid-input');
+
+  // Daha önce girilmişse kutuda görünsün (istersen bunu silebilirsin)
+  const oldPid = localStorage.getItem(pidKey);
+  if (oldPid) input.value = oldPid;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const pid = input.value.trim();
+    if(!pid){
+      alert('Lütfen katılımcı kodu girin.');
+      return;
+    }
+    localStorage.setItem(pidKey, pid);
+    alert('Katılımcı kodu kaydedildi: ' + pid);
+  });
+})();
+</script>

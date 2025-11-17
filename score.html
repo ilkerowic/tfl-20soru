@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Okuma Testi – Sonuç</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#f5f7fb;
+      margin:0;
+      padding:30px 10px;
+    }
+    .wrap{
+      max-width:900px;
+      margin:0 auto;
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 8px 25px rgba(15,23,42,.08);
+      padding:28px 32px 32px;
+    }
+    h1{margin-top:0;margin-bottom:10px;font-size:26px;}
+    .meta{font-size:14px;color:#555;margin-bottom:18px;}
+    table{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px;}
+    th,td{border-bottom:1px solid #e5e7eb;padding:8px 6px;text-align:left;}
+    th{background:#f3f4f6;}
+    .ok{color:#16a34a;font-weight:600;}
+    .no{color:#b91c1c;font-weight:600;}
+    .btn-row{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;}
+    button{
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:14px;
+      cursor:pointer;
+      background:#0369a1;
+      color:#fff;
+    }
+    button.secondary{
+      background:#e5e7eb;
+      color:#111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Okuma Testi – Sonuç</h1>
+    <div class="meta">
+      Katılımcı: <strong id="p-id">(tanımsız)</strong><br>
+      Doğru sayısı: <strong id="score-text">–</strong>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Soru</th>
+          <th>Verilen cevap</th>
+          <th>Doğru cevap</th>
+          <th>Durum</th>
+        </tr>
+      </thead>
+      <tbody id="results-body"></tbody>
+    </table>
+
+    <div class="btn-row">
+      <button id="btn-copy-json" type="button">Verileri JSON olarak kopyala</button>
+      <button id="btn-reset" class="secondary" type="button">Yeni katılımcı için sıfırla</button>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const quizKey = 'tfl-20soru';
+    const answersKey = quizKey + ':answers';
+    const metaKey    = quizKey + ':meta';
+    const pidKey     = quizKey + ':participantId';
+
+    // 🔑  BURAYI KENDİ CEVAP ANAHTARINA GÖRE DÜZENLE
+    const answerKey = {
+    'soru-1':  'B',
+    'soru-2':  'B',
+    'soru-3':  'A',
+    'soru-4':  'A',
+    'soru-5':  'A',
+    'soru-6':  'B',
+    'soru-7':  'E',
+    'soru-8':  'E',
+    'soru-9':  'D',
+    'soru-10': 'A',
+    'soru-11': 'C',
+    'soru-12': 'C',
+    'soru-13': 'C',
+    'soru-14': 'D',
+    'soru-15': 'D',
+    'soru-16': 'A',
+    'soru-17': 'B',
+    'soru-18': 'A',
+    'soru-19': 'A',
+    'soru-20': 'C'
+    };
+    // ↑ Buradaki harfleri kendi doğru cevap harflerinle değiştir (A/B/C/D vb.)
+
+    function readJSON(key, def){
+      try { return JSON.parse(localStorage.getItem(key)) ?? def; }
+      catch(e){ return def; }
+    }
+
+    const answers = readJSON(answersKey, {});
+    const meta    = readJSON(metaKey, {});
+    const pid     = localStorage.getItem(pidKey) || '(katılımcı kodu girilmemiş)';
+
+    document.getElementById('p-id').textContent = pid;
+
+    const tbody = document.getElementById('results-body');
+    let total = 0;
+    let correct = 0;
+
+    Object.keys(answerKey).forEach(qid=>{
+      total++;
+      const dogru = answerKey[qid];
+      const verilen = (answers[qid] && answers[qid].value) ? answers[qid].value : '-';
+      const isOk = verilen === dogru;
+
+      if(isOk) correct++;
+
+      const tr = document.createElement('tr');
+
+      const tdQ = document.createElement('td');
+      tdQ.textContent = qid.replace('soru-','') + '. soru';
+
+      const tdGiven = document.createElement('td');
+      tdGiven.textContent = verilen;
+
+      const tdTrue = document.createElement('td');
+      tdTrue.textContent = dogru;
+
+      const tdStatus = document.createElement('td');
+      tdStatus.textContent = isOk ? 'Doğru' : 'Yanlış';
+      tdStatus.className = isOk ? 'ok' : 'no';
+
+      tr.appendChild(tdQ);
+      tr.appendChild(tdGiven);
+      tr.appendChild(tdTrue);
+      tr.appendChild(tdStatus);
+
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('score-text').textContent =
+      correct + ' / ' + total + ' doğru (' + Math.round(100*correct/total) + ' puan)';
+
+    // JSON kopyalama (tez için veri toplarken çok işine yarar)
+    document.getElementById('btn-copy-json').addEventListener('click', function(){
+      const payload = {
+        quizKey,
+        participantId: pid,
+        score: { correct, total },
+        answers,
+        meta
+      };
+      const txt = JSON.stringify(payload, null, 2);
+      navigator.clipboard.writeText(txt)
+        .then(()=>alert('JSON verisi panoya kopyalandı. Bir yere yapıştırıp kaydedebilirsin.'))
+        .catch(()=>alert('Kopyalama başarısız oldu, tarayıcı izinleri nedeniyle olabilir.'));
+    });
+
+    // Yeni katılımcı için tüm verileri temizle
+    document.getElementById('btn-reset').addEventListener('click', function(){
+      if(!confirm('Bu işlem mevcut katılımcının tüm cevaplarını silecek. Emin misiniz?')) return;
+      localStorage.removeItem(answersKey);
+      localStorage.removeItem(metaKey);
+      localStorage.removeItem(pidKey);
+      alert('Veriler temizlendi. Yeni katılımcı için hazırsınız.');
+      location.reload();
+    });
+
+  })();
+  </script>
+</body>
+</html>
+
